@@ -404,3 +404,34 @@ k_j = Kh_j^{(x)}\ j\in {1,...,n}
 v_j = Vh_j^{(x)}\ j\in {1,...,n}
 $$
 
+## More information about the Transformer
+output of the top encoder is transformed into a set of attention vectors K and V. These are to be used by each decoder in its cross-attentio layer which helps the decoder focus on appropriate places in the input sequence.
+
+The following steps repeat the process until a special symbol is reached indicating the transformer decoder has completed its output. The output of each step is fed to the bottom decoder in the next time step.
+
+最初第一个time step输出了第一个单词I
+![alt text](image-27.png)
+接着第二个time step用第一次输出的I作为decoder的输入接着生成第二个单词am
+![alt text](image-26.png)
+继续下去，直到生成代表结束的token
+![alt text](image-28.png)
+
+in the decoder, the self-attention layer is also masked to allow it to attend to earlier positions in the output sequence.
+
+## Language Model
+### Head
+
+Head means the additional neural we add on top of the basic transformer architecture to enable that task.
+
+The job of language modeling head is to take the output of the final transformer layer from the last token N and use it to predict the upcoming word at position N+1
+![alt text](image-29.png)
+
+This linear layer projecting output $h_N^l$ to logits can be learned, but more commonly tie this matrix to (the transpose of) the embedding matrix **E**.
+
+At the input stage of the tansformer the embedding matrix (of shape [|V] $\times$ d) is used to map to an embedding. In the language model head, $E^T$, the transpose of the embedding matrix is used to map back from an embedding to a vector over the vocabulay.
+这里因为相似程度用内积进行计算，所以用了$E^T$。在最后的输出阶段用$h_N^LE^T$相当于用$h_N^L$去与$E$的每个列向量计算相似度。最后其实和attention一样。
+
+![alt text](image-30.png)
+This is a decoder-only model mapping from a set of input tokens $w_1$ to $w_N$ to a predicted next word $W_{N+1}$
+
+Another useful feature of the unembedding layer: a tool for interpretability of the internals of the transformer that we call the **logit lens**. We can take a vector from any layer of the transformer and multiply it by the unembedding layer to get logits, and compute a softmax to see the distribution over words.
