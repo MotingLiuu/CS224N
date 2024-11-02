@@ -435,3 +435,77 @@ At the input stage of the tansformer the embedding matrix (of shape [|V] $\times
 This is a decoder-only model mapping from a set of input tokens $w_1$ to $w_N$ to a predicted next word $W_{N+1}$
 
 Another useful feature of the unembedding layer: a tool for interpretability of the internals of the transformer that we call the **logit lens**. We can take a vector from any layer of the transformer and multiply it by the unembedding layer to get logits, and compute a softmax to see the distribution over words.
+
+![alt text](image-31.png)
+**Sentiment** analysis can be casted as language modeling
+
+e.g
+$$
+P(positive|"The\ sentiment\ of\ the\ sentence\ I\ like\ Jackie\ Chan"\ is)
+$$
+So the sentiment analysis can be modeled as a word predict model.
+
+Question answering
+$$
+P(w|Q:\ Who\ wrote\ the\ book\ "The\ Origin\ of\ Species"?\ A)
+$$
+
+**Greedy decoding**
+$$
+\hat{w}_t=argmax_{w\in V}P(w|W_{<t})
+$$
+The word predicted is predictable. The text generated is deterministic using the greedy algorithm. In practice, we always use **beam search** or **sampling methods**
+
+### Generation by Sampling
+algorithm for generating a sequence of words $W=w_1,w_2,...,w_N$
+$x\sim p(x)$ means "choose $x$ by sampling from the distribution $p(x)$"
+1. $i \leftarrow 1$
+2. $w_i \sim p(w)$
+3. while $w_i$ != EOS
+    1. $i \leftarrow i+1$
+    2. $w_i \sim p(w_i|w_{<i})$
+This is a **random sampling** method. It has many drawbacks.
+1. There many odd, low-probability words in the tail of the distribution. They consitute a large enough portion of the distribution.
+
+**Top-k sampling** truncate the distribution to the top k most likely words
+1. $k$ is fixed, but the shape of the probability distribution over words differs in different contexts. Sometimes the top k words will be likely and include most of the probability mass, other times the probability distribution will be flatter and top k words will only include a small part of the probability mass.
+
+
+**Nucleus or top-p sampling** 
+Not the top k words, but the top $p$ percent of the probability mass.
+
+**Temperature sampling**
+instead of computing the probility distribution over the vocabulay directly from the logit, insteat using a temperature function
+$$
+y = softmax(\mu/ \tau),\ \tau \leq 1
+$$
+
+### LLMs: Training Transformers
+At each word position $t$ of the input, the model takes as input the correct sequence of tokens $w_{1:t}$ and use them to compute a probability distribution over possible next word so as to compute the model's loss for the next token $w_{t+1}$.
+
+Then we ingore what the model predicted for the next word and instead use the correct sequence of tokens $w_{1:t+1}$ to estimate the probability of token $w_{t+2}$
+
+The idea that we always give the model the correct history sequence to predict the next word is called **teacher forcing**
+![alt text](image-32.png)
+The training item can be processed in parallel 
+
+**Scaling laws**
+The performace of larguage models is mainly determined by 3 factors
+1. model size(more parameters)
+2. dataset size(more data)
+3. amout of computer used for training(more training iteration)
+
+The loss $L$ as a function of the number of non-embedding parameters $N$, dataset size $D$, compute budget $C$.
+$$
+L(N) = (\frac{N_c}{N})^{\alpha_N}
+L(D) = (\frac{D_c}{D})^{\alpha_D}
+L(C) = (\frac{C_c}{C})^{\alpha_C}
+$$
+$N_c,D_c,C_c,\alpha_N,\alpha_D,\alpha_C$ depend on the exact transformer architecture, tokenization, and vocabulary size.
+The number of parameters $N$ can be roughly computed as 
+$$
+N \approx 2dn_{layer}(2d_{attn} + d_{ff})
+\\ \approx 12n_{layer}d^2
+\\ (assuming d_{attn}=d_{ff}/4 =d)
+$$
+$d$ is the input and output dimensionality of the model, $d_{attn}$ is the self-attention layer sieze, $d_{ff}$ is the size of the feedforward layer
