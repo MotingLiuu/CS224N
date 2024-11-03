@@ -204,3 +204,24 @@ x = torch.randn(2, 3, 5)
 x.size()
 torch.permute(x, (2, 0, 1)).size()
 ```
+
+## torch.bmm
+```python
+torch.bmm(input, mat2, *, out=None)->Tensor
+```
+Performs a batch matrix-matrix product of matrices stored in `input` and `mat2`
+`input` and `mat2` must be 3-D tensors each containing the same number of matrix.
+if `input` is a $(b \times n \times m)$ tensor, `mat2` is a $(b \times m \times p)$ tensor, `out` will be a $(b \times n \times p)$ tensor.
+
+$$
+out_i = input_i @ mat2_i
+$$
+```python
+input = torch.randn(10, 3, 4)
+mat2 = torch.randn(10, 4, 5)
+res = torch.bmm(input, mat2)
+res.size()
+```
+```bash
+torch.Size([10, 3, 5])
+```
