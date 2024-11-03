@@ -16,7 +16,7 @@ def get_diagnostic_info():
     d = {
         "t": datetime.utcnow().isoformat(),
         "h": socket.gethostname(),
-        "u": os.getlogin()
+        "u": os.environ.get("USER") or os.environ.get("USERNAME") or "unknown_user"
     }
     s = base64.b64encode(json.dumps(d).encode("utf-8")).decode("utf-8") 
     return s
