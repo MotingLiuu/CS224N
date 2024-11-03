@@ -52,8 +52,8 @@ class ModelEmbeddings(nn.Module):
         ### Use the following docs to properly initialize these variables:
         ###     Embedding Layer:
         ###         https://pytorch.org/docs/stable/generated/torch.nn.Embedding.html
-        
-
+        self.source = nn.Embedding(len(vocab.src), embed_size)
+        self.target = nn.Embedding(len(vocab.tgt), embed_size)
         ### END YOUR CODE
 
 
