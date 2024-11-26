@@ -97,7 +97,7 @@ class CharCorruptionDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
-
+    
     def __getitem__(self, idx):
         # TODO [part e]: see spec above
         ### YOUR CODE HERE ###

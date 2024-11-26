@@ -66,7 +66,7 @@ model = None
 if args.variant == 'vanilla':
     # TODO: [part c] Make some model here
     ### YOUR CODE HERE ###
-    model = GPT(mconf)
+    model = models.GPT(mconf)
     pass
     ### END YOUR CODE ###
 elif args.variant == 'rope':
@@ -142,7 +142,10 @@ elif args.function == 'finetune':
     #     number of epochs for each case.
 
     ### YOUR CODE HERE ###
-    trainer = Trainer(model, finetune_corpus_path, )
+    if args.reading_param_path is not None:
+        model.load_state_dict(torch.load(args.reading_param_path))
+    train_dataset = dataset.NameDataset(pretrain_dataset, open('birth_places_train.tsv', encoding='utf-8').read())
+    trainer = trainer.Trainer(model, train_dataset, None, mconf)
     pass
     ### END YOUR CODE ###
 elif args.function == 'evaluate':
