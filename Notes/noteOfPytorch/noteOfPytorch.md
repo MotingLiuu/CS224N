@@ -1,4 +1,34 @@
 # nn
+
+## nn.ModuleList(modules=None)
+`ModuleList` can be indexed like a regular Python list
+
+**Parameters**
+
+**modules**(iterable, optional)-an iterable of modules to add
+
+**Example**:
+```python
+class MyModule(nn.Module):
+    def __init__(self)-> None:
+        super().__init__()
+        self.linears = nn.ModuleList([nn.Linear(10, 10) for i in range(10)])
+    
+    def forward(self, x):
+        for i, l in enumerate(self.linears):
+            x = self.linears[i//2](x) + l(x)
+        return x
+```
+
+**append**(module)
+Append a given module to the end of the list.
+
+**extend**(modules)
+Append modules from a Python iterable to the end of the list.
+
+**insert**(index, module)
+Insert a given module before a given index in the list.
+
 ## nn.Embedding
 ```python
 class torch.nn.Embedding(num_embeddings,
@@ -225,3 +255,4 @@ res.size()
 ```bash
 torch.Size([10, 3, 5])
 ```
+
