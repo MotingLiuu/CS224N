@@ -66,6 +66,7 @@ model = None
 if args.variant == 'vanilla':
     # TODO: [part c] Make some model here
     ### YOUR CODE HERE ###
+    model = GPT(mconf)
     pass
     ### END YOUR CODE ###
 elif args.variant == 'rope':
@@ -141,6 +142,7 @@ elif args.function == 'finetune':
     #     number of epochs for each case.
 
     ### YOUR CODE HERE ###
+    trainer = Trainer(model, finetune_corpus_path, )
     pass
     ### END YOUR CODE ###
 elif args.function == 'evaluate':
