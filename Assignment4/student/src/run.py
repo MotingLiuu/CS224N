@@ -57,7 +57,8 @@ mconf = models.GPTConfig(
     pretrain_dataset.block_size,
     n_layer=4,
     n_head=8,
-    n_embd=256)
+    n_embd=256
+    )
 
 # define models.
 # note: models should moved to device defined on lines 30-34.
@@ -67,13 +68,20 @@ if args.variant == 'vanilla':
     # TODO: [part c] Make some model here
     ### YOUR CODE HERE ###
     model = models.GPT(mconf).to(device)
-    pass
     ### END YOUR CODE ###
 elif args.variant == 'rope':
     # TODO: [part g] Make some other model here
     # set mconf.rope parameter
     ### YOUR CODE HERE ###
-    pass
+    mconf_rope = models.GPTConfig(
+        pretrain_dataset.vocab_size,
+        pretrain_dataset.block_size,
+        n_layer=4,
+        n_head=8,
+        n_embd=256,
+        rope=True
+    )
+    model = models.GPT(mconf_rope).to(device)
     ### END YOUR CODE ###
 else:
     raise ValueError("Unknown model variant")
@@ -165,7 +173,7 @@ elif args.function == 'finetune':
                                     writer=writer
                                     )
     else:
-        tconf = trainer.TrainerConfig(max_epochs=10,
+        tconf = trainer.TrainerConfig(max_epochs=75,
                                     batch_size=256,
                                     learning_rate=args.finetune_lr,
                                     lr_decay=True,
@@ -174,7 +182,7 @@ elif args.function == 'finetune':
                                     num_workers=4,
                                     writer=writer
                                     )
-    train_dataset = dataset.NameDataset(pretrain_dataset, open('birth_places_train.tsv', encoding='utf-8').read())
+    train_dataset = dataset.NameDataset(pretrain_dataset, open(args.finetune_corpus_path, encoding='utf-8').read())
     trainer = trainer.Trainer(model, train_dataset, None, tconf)
     trainer.train()
     torch.save(model.state_dict(), args.writing_params_path)
