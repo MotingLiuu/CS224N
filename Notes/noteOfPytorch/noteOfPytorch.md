@@ -256,3 +256,17 @@ res.size()
 torch.Size([10, 3, 5])
 ```
 
+## torch.utils
+### torch.utils.Dataset
+An abstract class representing a `Dataset`
+All datasets that represent a map from keys to data samples should subclass it. All subclasses should overwrite `__getitem__()`, supporting fetching a data sample for a given key. Subclasses could also optionally overwrite `__len()__`, which is expected to return the size of the dataset by many `Samler` implementations and the default options of `DataLoader`. Subclasses could also optionally implement `__getitems__()` for speed up batched samples loading. This method accepts list of indices of samples of batch and return list of sample.
+
+所有继承`Dataset`的子类必须重写`__getitem__()`方法，可选`__len__()`和`__getitems__()`，用于加速batch samples loading
+
+**Dataset Types**
+The most important argument of `DataLoader` constructor. 
+* map-style datasets
+* iterable-style datasets
+**maps-style dataset**
+is one that implements `__getitem__()` and `__len__()` protocols, and represents a map from indices/keys to data samples.
+when accessed with `dataset[idx]`, could read the `idx`-th image and its corresponding lablel from a folder on the disk.

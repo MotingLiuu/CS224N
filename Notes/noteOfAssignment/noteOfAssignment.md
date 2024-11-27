@@ -44,3 +44,60 @@ $$
     X_{pos} = X + \Phi
     $$
 3. Pretrained Transformer models and knowledge access
+```python
+class CharCorruptionDataset(Dataset):
+    def __init__(self, data, block_size):
+        self.MASK_CHAR = "\u2047" # the doublequestionmark character, for mask
+        self.PAD_CHAR = "\u25A1" # the empty square character, for pad
+
+        chars = list(sorted(list(set(data))))
+        assert self.MASK_CHAR not in chars
+        assert self.PAD_CHAR not in chars
+        chars.insert(0, self.MASK_CHAR)
+        chars.insert(0, self.PAD_CHAR)
+
+        self.stoi = {ch:i for i,ch in enumerate(chars)}
+        self.itos = {i:ch for i,ch in enumerate(chars)}
+
+        data_size, vocab_size = len(data), len(chars)
+        print(f'data has {data_size} characters, {vocab_size} unique.')
+
+        self.block_size = block_size
+        self.vocab_size = vocab_size
+        self.data = data.split('\n')
+```
+split the data, every line can be treated as a sample.
+
+```python
+class NameDataset(Dataset):
+    def __init__(self, pretraining_dataset, data):
+        self.MASK_CHAR = "\u2047" # the doublequestionmark character, for mask
+        self.PAD_CHAR = "\u25A1" # the empty square character, for pad
+        self.itos = pretraining_dataset.itos
+        self.stoi = pretraining_dataset.stoi
+        self.block_size = pretraining_dataset.block_size
+        self.data = list(data.encode('utf-8').decode('ascii', errors='ignore').split('\n'))
+
+    def __len__(self):
+        return len(self.data) - 1
+
+    def __getitem__(self, idx):
+        inp, oup = self.data[idx].split('\t')
+        x = inp + self.MASK_CHAR + oup + self.MASK_CHAR
+        x = x + self.PAD_CHAR*(self.block_size - len(x))
+        y = self.PAD_CHAR*(len(inp)-1) + x[len(inp):]
+
+        x = x[:-1]
+        x = torch.tensor([self.stoi[c] for c in x], dtype=torch.long)
+        y = torch.tensor([self.stoi[c] for c in y], dtype=torch.long)
+        return x, y
+```
+**（e）**
+1. randomly truncate the document(a data entry) no less than 4 characters, no more than int(self.block_size*7/8) characters
+2. break the truncated into
+    [prefix] [masked_content] [suffix]
+    the length of [masked_content] should be random, 1/4 the length of the truncated document on average
+3. Rearrange these substrings into the following form:
+    [prefix] MASK_CHAR [suffix] MASK_CHAR [masked_content] [pads]
+4. construct the input and output example pair
+5. encode the resulting input and output strings 
