@@ -104,7 +104,7 @@ if args.function == 'pretrain':
 
     ### YOUR CODE HERE ###
     tconf = trainer.TrainerConfig(max_epochs=650,
-                                  batch_size=128,
+                                  batch_size=256,
                                   learning_rate=args.pretrain_lr,
                                   lr_decay=True,
                                   warmup_tokens=512*20,
@@ -155,15 +155,25 @@ elif args.function == 'finetune':
     ### YOUR CODE HERE ###
     if args.reading_params_path is not None:
         model.load_state_dict(torch.load(args.reading_params_path))
-    tconf = trainer.TrainerConfig(max_epochs=75,
-                                  batch_size=256,
-                                  learning_rate=args.finetune_lr,
-                                  lr_decay=True,
-                                  warmup_tokens=512*20,
-                                  final_tokens=200*len(pretrain_dataset)*block_size,
-                                  num_workers=4,
-                                  writer=writer
-                                  )
+        tconf = trainer.TrainerConfig(max_epochs=10,
+                                    batch_size=256,
+                                    learning_rate=args.finetune_lr,
+                                    lr_decay=True,
+                                    warmup_tokens=512*20,
+                                    final_tokens=200*len(pretrain_dataset)*block_size,
+                                    num_workers=4,
+                                    writer=writer
+                                    )
+    else:
+        tconf = trainer.TrainerConfig(max_epochs=10,
+                                    batch_size=256,
+                                    learning_rate=args.finetune_lr,
+                                    lr_decay=True,
+                                    warmup_tokens=512*20,
+                                    final_tokens=200*len(pretrain_dataset)*block_size,
+                                    num_workers=4,
+                                    writer=writer
+                                    )
     train_dataset = dataset.NameDataset(pretrain_dataset, open('birth_places_train.tsv', encoding='utf-8').read())
     trainer = trainer.Trainer(model, train_dataset, None, tconf)
     trainer.train()
