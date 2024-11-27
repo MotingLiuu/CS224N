@@ -109,15 +109,15 @@ class CharCorruptionDataset(Dataset):
         else:
             pre_truncate = random.randint(0, num_to_truncate)
             suf_truncate = num_to_truncate - pre_truncate
-            sentence_truncated = ori_sentence[pre_truncate+1: len(ori_sentence)-1-suf_truncate]
+            sentence_truncated = ori_sentence[pre_truncate: len(ori_sentence)-suf_truncate]
         
         num_masked = int(random.uniform(1/8, 3/8) * len(sentence_truncated)) 
-        sta_mask = random.randint(0, len(sentence_truncated) - num_masked - 1)
+        sta_mask = random.randint(0, len(sentence_truncated) - num_masked)
         sentence_rearranged = sentence_truncated[0:sta_mask] + self.MASK_CHAR\
             + sentence_truncated[sta_mask+num_masked:] + self.MASK_CHAR\
                 + sentence_truncated[sta_mask: sta_mask+num_masked]
-        sentence_rearranged = sentence_rearranged + (self.block_size\
-            + 1 - len(sentence_rearranged)) * self.PAD_CHAR
+        sentence_rearranged = sentence_rearranged\
+            + (self.block_size + 1 - len(sentence_rearranged)) * self.PAD_CHAR
         
         input = sentence_rearranged[:-1]
         output = sentence_rearranged[1:]
