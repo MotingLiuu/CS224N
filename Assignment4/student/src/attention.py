@@ -38,8 +38,8 @@ def precompute_rotary_emb(dim, max_positions):
     rope_cache = None
     # TODO: [part g]
     ### YOUR CODE HERE ###
-    grid_t, grid_d = torch.meshgrid(torch.arange(0, max_positions, step=1), 
-                            10000**(-2*torch.arange(0, dim/2, step=1)/dim)
+    grid_t, grid_d = torch.meshgrid(torch.arange(0, max_positions, step=1, dtype=torch.float32), 
+                            10000**(-2*torch.arange(0, dim/2, step=1, dtype=torch.float32)/dim)
                           )
     sin = torch.sin(grid_t * grid_d)
     cos = torch.cos(grid_t * grid_d)
@@ -63,12 +63,12 @@ def apply_rotary_emb(x, rope_cache):
 
     rotated_x = None
     ### YOUR CODE HERE ###
-    B, T, dim = x.shape
-    x_reshaped = x.view(B, T, dim//2, 2)
+    B, n_head, T, dim = x.size()
+    x_reshaped = x.view(B, n_head, T, dim//2, 2)
     x_complex = torch.view_as_complex(x_reshaped)
-    rope_cache_complex = torch.view_as_complex(rope_cache[:T,:,:])
+    rope_cache_complex = torch.view_as_complex(rope_cache[:T])
     rotated_x = torch.view_as_real(x_complex * rope_cache_complex)
-    rotated_x = rotated_x.view(B, T, dim)
+    rotated_x = rotated_x.view(B, n_head, T, dim)
     ### END YOUR CODE ###
     return rotated_x
 
@@ -122,7 +122,7 @@ class CausalSelfAttention(nn.Module):
         if self.rope:
             # TODO: [part g] Apply RoPE to the query and key.
             ### YOUR CODE HERE ###
-            q = apply_rotary_emb(q, self.rope_chache)
+            q = apply_rotary_emb(q, self.rope_cache)
             k = apply_rotary_emb(k, self.rope_cache)
             ### END YOUR CODE ###
 
