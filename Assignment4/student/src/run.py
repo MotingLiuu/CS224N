@@ -73,15 +73,8 @@ elif args.variant == 'rope':
     # TODO: [part g] Make some other model here
     # set mconf.rope parameter
     ### YOUR CODE HERE ###
-    mconf_rope = models.GPTConfig(
-        pretrain_dataset.vocab_size,
-        pretrain_dataset.block_size,
-        n_layer=4,
-        n_head=8,
-        n_embd=256,
-        rope=True
-    )
-    model = models.GPT(mconf_rope).to(device)
+    mconf.rope = True
+    model = models.GPT(mconf).to(device)
     ### END YOUR CODE ###
 else:
     raise ValueError("Unknown model variant")
@@ -173,7 +166,7 @@ elif args.function == 'finetune':
                                     writer=writer
                                     )
     else:
-        tconf = trainer.TrainerConfig(max_epochs=75,
+        tconf = trainer.TrainerConfig(max_epochs=10,
                                     batch_size=256,
                                     learning_rate=args.finetune_lr,
                                     lr_decay=True,

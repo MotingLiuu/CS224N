@@ -103,21 +103,16 @@ class CharCorruptionDataset(Dataset):
         ### YOUR CODE HERE ###
         ori_sentence = self.data[idx]
         num_truncated = random.randint(4, int(self.block_size * 7/8))
-        num_to_truncate = len(ori_sentence) - num_truncated
-        if num_to_truncate <= 0:
-            sentence_truncated = ori_sentence
-        else:
-            pre_truncate = random.randint(0, num_to_truncate)
-            suf_truncate = num_to_truncate - pre_truncate
-            sentence_truncated = ori_sentence[pre_truncate: len(ori_sentence)-suf_truncate]
+        sentence_truncated = ori_sentence[:num_truncated]
         
-        num_masked = int(random.uniform(1/8, 3/8) * len(sentence_truncated)) 
+        num_masked = random.randint(1, 2*int(len(sentence_truncated)/4)) 
         sta_mask = random.randint(0, len(sentence_truncated) - num_masked)
-        sentence_rearranged = sentence_truncated[0:sta_mask] + self.MASK_CHAR\
-            + sentence_truncated[sta_mask+num_masked:] + self.MASK_CHAR\
-                + sentence_truncated[sta_mask: sta_mask+num_masked]
-        sentence_rearranged = sentence_rearranged\
-            + (self.block_size + 1 - len(sentence_rearranged)) * self.PAD_CHAR
+        
+        prefix = sentence_truncated[:sta_mask]
+        suffix = sentence_truncated[sta_mask+num_masked:]
+        content_masked = sentence_truncated[sta_mask: sta_mask+num_masked]
+        sentence_rearranged = prefix + self.MASK_CHAR + suffix + self.MASK_CHAR + content_masked \
+            + self.PAD_CHAR*(self.block_size+1-len(prefix + self.MASK_CHAR + suffix + self.MASK_CHAR + content_masked))
         
         input = sentence_rearranged[:-1]
         output = sentence_rearranged[1:]
