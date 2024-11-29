@@ -270,3 +270,82 @@ The most important argument of `DataLoader` constructor.
 **maps-style dataset**
 is one that implements `__getitem__()` and `__len__()` protocols, and represents a map from indices/keys to data samples.
 when accessed with `dataset[idx]`, could read the `idx`-th image and its corresponding lablel from a folder on the disk.
+
+## torch.meshgrid
+```python
+torch.meshgrid(*tensors, indexing='ij') -> Sequence[Tensor]
+```
+1. `*tensors`输入多个一维张量，每个张量定义一个维度的采样点
+2. `indexing`可选参数，默认为`ij`
+指定网格的索引模式
+可选
+`ij`：生成网格遵循行-列的方式，输出张量顺序和张量形状一致
+`xy`：与`ij`模式维度顺序相反，交换第一维和第二维
+
+返回一个元组，包含与输入张量数量相同的输出张量，如果是两个M和N的张量，张量形状为(M, N)
+
+```python
+import torch
+
+x = torch.linspace(0, 1, 3)  # 定义 x 方向的 3 个点
+y = torch.linspace(0, 1, 4)  # 定义 y 方向的 4 个点
+
+grid_x, grid_y = torch.meshgrid(x, y, indexing='ij')
+
+print("grid_x:\n", grid_x)
+print("grid_y:\n", grid_y)
+```
+```bash
+grid_x:
+ tensor([[0.0000, 0.0000, 0.0000, 0.0000],
+         [0.5000, 0.5000, 0.5000, 0.5000],
+         [1.0000, 1.0000, 1.0000, 1.0000]])
+grid_y:
+ tensor([[0.0000, 0.3333, 0.6667, 1.0000],
+         [0.0000, 0.3333, 0.6667, 1.0000],
+         [0.0000, 0.3333, 0.6667, 1.0000]])
+
+```
+
+## torch.view_as_real
+```python
+torch.view_as_real(input)->Tensor
+```
+returns a view of `input` as a real tensor. For an input complex tensor of `size` $m_1,m_2,...,m_i$ this function returns a real tensor of size $m_1,m_2,...,m_i$.
+
+The last dimenstion of size 2 represents the real and imaginary components of complex numbers.
+
+`view_as_real()` is only supported for tensors with `complex dtypes`
+
+```python
+x=torch.randn(4, dtype=torch.cfloat)
+x
+torch.view_as_real(x)
+```
+```bash
+tensor([[ 0.4737, -0.3839],
+        [-0.2098, -0.6699],
+        [ 0.3470, -0.9451],
+        [-0.5174, -1.3136]])
+```
+
+## torch.view_as_complex
+`torch.view_as_complex(input)->Tensor`
+Returns a view of `input` as a complex tensor. For an input complex tensor of `size` $m_1,m_2,...,m_i,2$, this function returns a new complex tensor of `size` $m_1,m_2,...,m_i$ where the last dimension of the input tensor is expected to represent the real and imaginary components of complex number.
+view_as_complex() is only supported for tensors with torch.dtype torch.float64 and torch.float32. The input is expected to have the last dimension of size 2. In addition, the tensor must have a stride of 1 for its last dimension. The strides of all other dimensions must be even numbers.
+```python
+x=torch.randn(4, 2)
+x
+```
+```bash
+tensor([[ 1.6116, -0.5772],
+        [-1.4606, -0.9120],
+        [ 0.0786, -1.7497],
+        [-0.6561, -1.6623]])
+```
+```python
+torch.view_as_complex(x)
+```
+```bash
+tensor([(1.6116-0.5772j), (-1.4606-0.9120j), (0.0786-1.7497j), (-0.6561-1.6623j)])
+```

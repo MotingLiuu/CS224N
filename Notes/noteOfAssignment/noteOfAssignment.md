@@ -101,3 +101,23 @@ class NameDataset(Dataset):
     [prefix] MASK_CHAR [suffix] MASK_CHAR [masked_content] [pads]
 4. construct the input and output example pair
 5. encode the resulting input and output strings 
+
+**(g)** Rotary Positional Embedding(RoPE)
+
+Transformer won't perform well on context lengths much larger than it was trained on, because the distribution of the position embedding will be very different from the ones it was trained on.
+
+**RoPE** alleviate this issue.
+$$
+RoPE(x_t^{(1)}, x_t^{(2)}, t) = (\begin{matrix}cost\theta&-sint\theta\\
+sint\theta&cost\theta\end{matrix})(\begin{matrix}x_t^{(1)}\\x_t^{(2)}\end{matrix})
+$$
+For a $d$ dimentsional feature, **RoPE** is applied to each pair of features with an angle $\theta_i$, $\theta_i=10000^{-2(i-1)/d},i\in{1,2,...,d/2}$
+![alt text](image-1.png)
+
+instead of adding the positional embeddding to the input embeddings, **RoPE** is applied to the key and query vectors for each head in the attention block for all the Transformer layers.
+
+1. operation can be viewed as rotation of the complex number $x_t^{(1)}+ix_t^{(2)}$ by an angle $t\theta$
+So we can rewrite the RoPE operation as an element-wise multiplication of two vectors 
+![alt text](image-2.png)
+
+2. **Relative Embeddings** the dot product of the RoPE embeddings of two vectors at positions $t_1$ and $t_2$ depends on the relative position $t_1 - t_2$ only.
