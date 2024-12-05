@@ -349,3 +349,92 @@ torch.view_as_complex(x)
 ```bash
 tensor([(1.6116-0.5772j), (-1.4606-0.9120j), (0.0786-1.7497j), (-0.6561-1.6623j)])
 ```
+
+## torch.topk()
+```python
+torch.topk(input, k, dim=None, largest=True, sorted=True)
+```
+* `k`返回最大的（或最小的）`k`个元素
+* `dim`指定沿着那个维度执行操作，默认为最后一个维度
+* `largest`:
+    * 如果为`True`，返回最大的`k`个元素
+    * 如果为`False`,返回最小的`k`个元素
+* `sorted`:
+    * 如果`True`，返回值按照降序排列
+    * 如果`False`, 返回值无序
+
+`return`
+一个元组`(values, indices)`
+* `values`选出的前`k`个值
+* `indices`这些值在张量中的索引
+
+## torch.multinomial()
+```python
+torch.multinomial(input, num_samples, replacement=False, *, generator=None, out=None)
+```
+* `replacement`：
+    * 如果`True`，允许重复采样
+    * 如果`False`,不允许重复采样
+* `generator`：用于设置随机种子
+* `out`：保存输出的张量
+
+`return`
+返回一个张良，包含从分布中采样得到的索引
+```python
+import torch
+probs = torch.tensor([0.1, 0.2, 0.3, 0.4])
+
+# 不允许重复采样，采样 3 个索引
+samples = torch.multinomial(probs, 3, replacement=False)
+print(samples)  # 输出: tensor([3, 2, 1]) （结果可能不同，随机性）
+
+# 允许重复采样
+samples = torch.multinomial(probs, 5, replacement=True)
+print(samples)  # 输出: tensor([3, 2, 3, 3, 1]) （结果可能不同，随机性）
+```
+
+## torch.gather()
+```python
+torch.gather(input, dim, index, *, sparse_grad=False, out=None)
+```
+`dim`指定从哪个维度收集值
+`index`索引张量，大小与`input`相同，表示要采样的索引
+`sparse_grad`是否为稀疏矩阵存储
+`out`保存输出的张量
+
+```python
+import torch
+x = torch.tensor([[10, 20, 30], [40, 50, 60]])
+index = torch.tensor([[0, 2], [1, 0]])
+
+# 按索引从 dim=1 中收集值
+result = torch.gather(x, dim=1, index=index)
+print(result)  # 输出: tensor([[10, 30], [50, 40]])
+
+```
+
+
+# 模型参数保存读取
+## save
+```python
+torch.save(model.state_dict(), 'model_parameters.pth')
+```
+保存模型参数到当前文件夹下
+## load
+```python
+model = MyModel()
+model.load_state_dict(torch.load('model_parameters.pth'))
+```
+
+# Tensor
+## tensor.unsqueeze
+```python
+tensor.unsqueeze(dim)
+```
+用于在张量的指定维度增加一个大小为`1`的维度
+## tensor.repeat
+```python
+tensor.repeat(*size)
+```
+`size`: 一个整数或者元组，指定每个维度上的重复次数
+返回值: 返回一个新的张量，形状为原始张量形状与`sizes`的广播结果
