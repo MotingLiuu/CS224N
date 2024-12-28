@@ -142,3 +142,7 @@ The only extra parameters we require during fine-tuning are $W_y$, and embedding
 
 ### Task-specific input transformations
 convert structured inputs into an ordered sequence that pre-trained model can process. All transformations include adding randomly initialized start and end tokens $(<s>, <e>)$
+
+# LORA(Low-Rank Adaptation of LLM)
+Learned over-parametrized models in fact reside on a low intrinsic dimension. So hypothesize that the change in weights during model adaptation also has a low "intrinsic rank". LoRA allows to train some dense layers' change during adaptation instead, while keeping the pre-trained weights frozen.
+![alt text](image-3.png)
