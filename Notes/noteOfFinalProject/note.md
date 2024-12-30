@@ -128,3 +128,22 @@ two unsupervised tasks on Wikipedia articles
 1. `bert.BertSelfAttention.attention`
 2. `bert.BertLayer` and `bert.BertModel`
 
+
+
+## 4 Sentiment Analysis with the BERT
+
+Implement `BertSentimentClassifer`
+
+Implement the `step()` function of the Adam Optimizer
+
+**Adam**
+
+compute adaptive learning rate for different parameters by estimating the first and second moments of the gradients.
+
+1. Updates exponential moving averages of the gradient $m_t$and the squared gradient $v_t$where the hyperparameters $\beta_1, \beta_2 \in [0, 1)$control the rate of exponential decay of these averages.
+2. $m_0$ and $v_0$ are initialized at 0 at the initial time step
+
+IDEA: perform bias correction to obtain $\hat{m}_t$ and $\hat{v}_t$ at each time step.
+
+![](tmp24B3.png)
+
