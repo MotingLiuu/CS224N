@@ -147,3 +147,29 @@ IDEA: perform bias correction to obtain $\hat{m}_t$ and $\hat{v}_t$ at each time
 
 ![](tmp24B3.png)
 
+# Structure of DFP
+
+## 1. bert.py
+
+### Class BertSelfAttention(nn.Module)
+
+Bert的一个完整的Attention sublayer
+
+### Class BertLayer(nn.Module)
+
+包含BertSelfAttention, interm, FFD。中间含有残差连接和layernormalization
+
+### Class BertModel()
+
+
+
+## 2. base_bert.py
+
+### Class BertPreTrainedModel(nn.Module)
+
+
+
+## 3. config.py
+
+### Class PretrainedConfig(object)
+
